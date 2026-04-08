@@ -36,6 +36,8 @@ export interface CakeOrder{
 export interface Item{
   product_id : number;
   quantity : number;
+  price? : number;
+  note?: string;
 }
 //intreface para reserva para agregar platos especiales por el disa del padre pero no solo para eso para las fechas festivas
 export interface MenuItemPayload{

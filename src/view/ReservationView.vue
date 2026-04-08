@@ -298,7 +298,7 @@ watch(cakeField, (val) => {
     if (val.min_prep_hours && dateField.value && timeField.value) {
       // CORRECCIÓN: Pasamos los 5 argumentos necesarios
       const disponibleDesde = addBusinessHours(
-        new Date(), 
+        new Date(),
         val.min_prep_hours,
         { start: settings.value?.start_time || '', end: settings.value?.end_time || '' },
         getScheduleForDate,
@@ -311,7 +311,12 @@ watch(cakeField, (val) => {
     }
     setCakeOrder({
       menu_type: 'Tortas',
-      items: [{ product_id: val.product_id, quantity: 1 }],
+      items: [{
+        product_id: val.product_id,
+        quantity: 1,
+        price: Number(val.price.replace('Bs', '').trim()),
+        note: val.size
+      }],
     })
   } else {
     setCakeOrder(null)
