@@ -6,7 +6,8 @@ import apiClient from "../api/api"
 export interface OrderItem {
   product_id: number
   price?: number
-  quantity: number
+  quantity: number,
+  note?: string,
 }
 
 export interface OrderPayload {

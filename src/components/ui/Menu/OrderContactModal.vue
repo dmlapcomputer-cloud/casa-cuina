@@ -188,17 +188,18 @@ const handleSubmit = async () => {
   if (!validate()) return
   loading.value = true
   try {
-    const numericPrice = parseFloat(props.price.replace(/[^\d.]/g, '')) || 0
+    const numericPrice = Number(props.price.replace(/[^0-9]/g, '')) || 0
     await OrderService.createOrder({
       customer_name: form.value.customer_name,
-      customer_phone: `591${form.value.customer_phone}`,
+      customer_phone: `${form.value.customer_phone}`,
       menu_type: props.menuType,
       required_date: form.value.required_date,
       required_time: form.value.required_time,
       items: [{
         product_id: props.productId,
         price: numericPrice,
-        quantity: 1
+        quantity: 1,
+        note: props.portionLabel
       }]
     })
     toast.success('¡Pedido registrado!', {

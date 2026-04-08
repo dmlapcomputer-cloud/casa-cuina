@@ -73,9 +73,7 @@ import PriceSizeSelector from './PriceSizeSelector.vue'
 import WhatsAppButton from './WhatsAppButton.vue'
 import OrderDecisionModal from './OrderDecisionModal.vue'
 import OrderContactModal from './OrderContactModal.vue'
-import { useSystemSettings } from '@/composables/useSystemSettings'
 
-const { qrCodeUrl } = useSystemSettings()
 const router = useRouter()
 
 const props = defineProps<{ item: Product }>()
@@ -92,12 +90,6 @@ const openContactModal = () => {
 const selectedOption = computed(() =>
   seleccionado.value !== null ? priceOptions.value[seleccionado.value] : null
 )
-
-const waNumber = computed(() => {
-  const raw ='59162153126'
-  const clean = raw.replace(/\D/g, '')
-  return clean.startsWith('591') ? clean : `591${clean}`
-})
 
 // Opción 1: ir al flujo de reserva con el producto pre-cargado como nota
 const handleReserve = () => {
@@ -117,23 +109,7 @@ const handleReserve = () => {
 // Opción 2: pago directo — recibe nombre y teléfono del modal de contacto
 const handleDirectPay = (contact: { name: string; phone: string }) => {
   showContactModal.value = false
-  const option = selectedOption.value
   seleccionado.value = null
-  if (!option) return
-
-  const qrLine = qrCodeUrl.value
-    ? `\n\n🔳 *QR de pago:*\n${qrCodeUrl.value}`
-    : ''
-
-  const msg = encodeURIComponent(
-    `Hola! Soy *${contact.name}* y quiero realizar el pago de:\n\n` +
-    `🎂 *${props.item.name}*\n` +
-    `📦 *Porción:* ${option.size}\n` +
-    `💰 *Total:* ${option.price}\n` +
-    `📞 *Tel:* ${contact.phone}` +
-    qrLine
-  )
-  window.open(`https://wa.me/${waNumber.value}?text=${msg}`, '_blank')
 }
 
 const cleanDescription = (html: string) => {
