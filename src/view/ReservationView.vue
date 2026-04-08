@@ -170,7 +170,7 @@
     :description="`Esta torta necesita ${cakeField?.min_prep_hours}h de preparación. Tu fecha actual no tiene suficiente tiempo.`"
     confirm-label="Cambiar fecha y hora" cancel-label="Quitar torta"
     @confirm="() => { dateField = ''; timeField = ''; activeStep = 2; showCakeWarning = false }"
-    @cancel="() => { cakeField = null; showCakeWarning = false }" @dismiss="showCakeWarning = false" />
+    @cancel="() => { cakeField = null; showCakeWarning = false }" @dismiss="cakeField = null, showCakeWarning = false" />
 
 </template>
 
@@ -413,8 +413,8 @@ const handleExperienceStep = (id: number) => { // Ahora recibe number
       title: selectedOption.name,
       min_price: Number(selectedOption.booking_charge), // Dinámico: 300
       min_guests: Number(selectedOption.min_people),    // Dinámico: 2
-      duration: (Number(selectedOption.duration_minutes) || 180) / 60,   // Dinámico: 3 horas
-      anticipation: Number(selectedOption.min_lead_hours) || 24 // Dinámico: 24h
+      duration: (Number(selectedOption.duration_minutes) || 0) / 60,   // Dinámico: 3 horas
+      anticipation: Number(selectedOption.min_lead_hours) || 0 // Dinámico: 24h
     };
     showSpecialModal.value = true;
   } else {

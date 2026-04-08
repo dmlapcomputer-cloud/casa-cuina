@@ -49,11 +49,11 @@
                     <div class="grid grid-cols-2 gap-4">
                       <div class="p-5 border border-stone-100 rounded-2xl text-left bg-white">
                         <span class="text-[11px] uppercase font-bold text-stone-400 tracking-widest block mb-2">Disponibilidad</span>
-                        <span class="text-stone-800 font-medium text-sm">{{ room.duration || 3 }} Horas de uso privado</span>
+                        <span class="text-stone-800 font-medium text-sm">{{ room.duration || 0 }} Horas de uso privado</span>
                       </div>
                       <div class="p-5 border border-stone-100 rounded-2xl text-left bg-white">
                         <span class="text-[11px] uppercase font-bold text-stone-400 tracking-widest block mb-2">Planificación</span>
-                        <span class="text-stone-800 font-medium text-sm">{{ room.anticipation || 24 }} Horas mínimas</span>
+                        <span class="text-stone-800 font-medium text-sm">{{ room.anticipation || 0 }}h de anticipación mínima</span>
                       </div>
                     </div>
                   </div>
@@ -88,7 +88,7 @@
                     <div class="text-center border-l border-stone-100">
                       <span class="text-[9px] uppercase font-bold text-stone-400 tracking-widest block mb-1">Duración</span>
                       <span class="font-bold text-xl font-sans text-stone-800">
-                        {{ room.duration || 3 }} <span class="text-xs font-medium">Hrs</span>
+                        {{ room.duration || 0 }} <span class="text-xs font-medium">Hrs</span>
                       </span>
                     </div>
                   </div>
@@ -111,7 +111,7 @@
                         class="inline-flex flex-col items-center gap-1 bg-amber-50/50 px-6 py-3 rounded-2xl border border-amber-100/50">
                         <div class="flex items-center gap-2">
                           <Icon icon="lucide:clock" class="w-3.5 h-3.5 text-amber-600" />
-                          <span class="text-[10px] text-amber-700 font-bold uppercase tracking-wider">Anticipación de {{ room.anticipation || 24 }}h requerida</span>
+                          <span class="text-[10px] text-amber-700 font-bold uppercase tracking-wider">Requiere {{ room.anticipation || 0 }}h de anticipación</span>
                         </div>
                         <span class="text-[11px] text-amber-600 font-medium">Próximo: {{ nextAvailableFormatted }}</span>
                       </div>
@@ -119,14 +119,14 @@
 
                     <div class="space-y-4">
                       <div class="bg-stone-50/40 p-1 rounded-2xl border border-stone-100/50">
-                        <DateStepper :model-value="tempDate ?? undefined" :anticipation-hours="room.anticipation || 24"
+                        <DateStepper :model-value="tempDate ?? undefined" :anticipation-hours="room.anticipation || 0"
                           @update:model-value="(val: any) => tempDate = val" :block-mondays="true"
                           :closed-dates="[{ date: '2026-03-22', reason: 'Cerrado por Elecciones' }]"
                           />
                       </div>
                       <div class="py-2 w-full overflow-x-auto">
                         <TimeStepper :model-value="tempTime" :room-id="room.id" :selected-date="tempDate"
-                          :anticipation-hours="room.anticipation || 24"
+                          :anticipation-hours="room.anticipation || 0"
                           @update:model-value="(val: any) => tempTime = val" layout="horizontal" />
                       </div>
                     </div>
@@ -201,7 +201,7 @@ watch(() => props.isOpen, (isOpen) => {
     tempGuests.value = props.currentGuests;
     tempDate.value = props.initialDate;
 
-    const hoursNeeded = props.room?.anticipation || 24;
+    const hoursNeeded = props.room?.anticipation || 0;
     const now = new Date();
     const minDate = new Date();
     minDate.setHours(now.getHours() + hoursNeeded);
@@ -233,10 +233,10 @@ const nextAvailableFormatted = computed(() => {
 
 const isValidAnticipation = computed(() => {
   if (!tempDate.value || !tempTime.value) return false;
-  
+
   // Creamos la fecha que el usuario eligió en el Stepper
   const seleccionado = new Date(`${tempDate.value}T${tempTime.value}`);
-  
+
   // Es válido SOLO si es igual o posterior al mínimo permitido
   return seleccionado >= minAllowedDate.value;
 });
@@ -280,10 +280,10 @@ const minAllowedDate = computed(() => {
 
   // 2. Forzamos a TS a tratar esto como un objeto válido (Casting)
   const settings = injectedSettings.value;
-  
+
   // 3. Extraemos las horas como número y los horarios como string
-  const horasAnticipo = Number(props.room.anticipation || 33);
-  
+  const horasAnticipo = Number(props.room.anticipation || 0);
+
   // 4. Usamos valores por defecto directos para que nunca sean undefined/null
   const openTimeStr: string = settings.start_time || "08:00:00";
   const closeTimeStr: string = settings.end_time || "23:00:00";
@@ -291,9 +291,9 @@ const minAllowedDate = computed(() => {
   return addBusinessHours(
     new Date(),
     horasAnticipo,
-    { 
-      start: openTimeStr, 
-      end: closeTimeStr 
+    {
+      start: openTimeStr,
+      end: closeTimeStr
     },
     getScheduleForDate,
     specialClosures.value.map(c => c.date)
