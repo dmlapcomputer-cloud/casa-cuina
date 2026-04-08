@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* --- REGLAS BASE (Jerarquía Global) --- */
+@layer base {
+  h1 {
+    @apply font-display text-hero text-stone-900 mb-6;
+  }
+
+  h2 {
+    @apply font-display text-section text-stone-800 mb-4;
+  }
+
+  h3 {
+    @apply font-display text-item-title text-stone-800;
+  }
+
+  h4 {
+    @apply font-serif text-tagline text-stone-700 italic;
+  }
+
+  p {
+    @apply font-sans text-body text-stone-600 leading-relaxed;
+  }
+
+  /* Aseguramos que Inter sea la base para todo lo demás */
+  body {
+    @apply font-sans text-stone-600 bg-stone-bg;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* --- COMPONENTES (UI Reutilizable) --- */
+@layer components {
+  /* Botones con tu nueva jerarquía font-sans */
+  .btn-next {
+    @apply bg-dark-accent text-white px-6 py-3 rounded-full font-sans text-[11px] font-bold uppercase tracking-[0.2em]
+           flex items-center justify-center transition-all hover:opacity-90
+           disabled:opacity-30 disabled:cursor-not-allowed shadow-md active:scale-95;
+  }
+
+  .btn-confirm {
+    @apply bg-primary text-white px-8 py-3 rounded-full font-sans text-[10px] font-bold uppercase tracking-ultra-wide
+           flex items-center justify-center gap-2 hover:bg-primary-dark shadow-lg transition-all
+           disabled:opacity-30 disabled:cursor-not-allowed active:scale-95;
+  }
+
+  .back-link {
+    @apply text-stone-600 font-sans text-xs font-bold uppercase tracking-widest hover:text-stone-900
+           transition-colors flex items-center gap-2 p-2;
+  }
+
+  /* Pantalla de números (como en el contador de personas) */
+  .number-display {
+    @apply font-serif text-[clamp(2.5rem,8vw,4rem)] text-dark-accent leading-none;
+  }
+
+  /* Estilo para etiquetas de formulario (Labels) */
+  .label-style {
+    @apply font-sans text-label text-stone-400 block mb-2;
+  }
+}
+
+/* --- UTILITARIOS EXTRAS --- */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
