@@ -1,7 +1,6 @@
 import { computed, ref, watch } from "vue";
 import { SettingService } from "@/services/SettingsService";
 import type { ScheduleCategory, SystemSettings } from "@/types/setting-type";
-import { ENV } from "@/config/env";
 import { useRoute } from "vue-router";
 
 // Mantener las refs fuera permite que el estado sea global entre componentes
@@ -9,8 +8,7 @@ const settings = ref<SystemSettings | null>(null);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 
-// Construimos la base de almacenamiento desde el ENV dinámico
-const STORAGE_BASE = ENV.API_URL.replace(/\/api\/?$/, '/storage/');
+import { getFullUrl } from "@/utils/imageHelper";
 
 export function useSystemSettings() {
   const route = useRoute();
@@ -35,11 +33,7 @@ export function useSystemSettings() {
     }
   };
 
-  const getFullUrl = (path: string | null | undefined) => {
-    if (!path) return '';
-    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-    return `${STORAGE_BASE}${cleanPath}`;
-  };
+
 
   // --- PROPIEDADES COMPUTADAS ---
   const logoUrl = computed(() => getFullUrl(settings.value?.logo));
