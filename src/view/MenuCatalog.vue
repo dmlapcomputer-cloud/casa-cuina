@@ -73,6 +73,8 @@
             v-for="(item, index) in filteredItems"
             :key="item.id"
             :item="item"
+            :selection="globalSelection?.productId === item.id ? globalSelection.portionIndex : null"
+            @update:selection="(portionIdx) => handleGlobalSelection(item.id, portionIdx)"
             class="animate-slide-up hover:-translate-y-1 transition-transform duration-300"
             :style="{ animationDelay: `${index * 0.08}s` }"
           />
@@ -116,6 +118,19 @@ const searchQuery = ref('')
 const activeCategory = ref('Tortas') // Empezamos directo en Tortas
 const loading = ref(true)
 const menuItems = ref<Product[]>([])
+
+// --- NUEVA LÓGICA DE SELECCIÓN GLOBAL ---
+// Guarda qué producto está seleccionado y qué porción específica
+const globalSelection = ref<{ productId: number; portionIndex: number } | null>(null)
+
+const handleGlobalSelection = (productId: number, portionIndex: number | null) => {
+  if (portionIndex === null) {
+    globalSelection.value = null
+  } else {
+    globalSelection.value = { productId, portionIndex }
+  }
+}
+
 
 // FILTRADO
 const filteredItems = computed(() => {

@@ -24,15 +24,16 @@
       <PriceSizeSelector
         v-if="priceOptions.length"
         :options="priceOptions"
-        v-model="seleccionado"
+        :model-value="selection"
+        @update:model-value="(val) => $emit('update:selection', val)"
       />
 
       <WhatsAppButton
         v-if="priceOptions.length"
         class="mt-2 md:mt-4"
-        :label="seleccionado !== null ? 'Realizar Pedido' : ''"
+        :label="selection !== null ? 'Realizar Pedido' : ''"
         placeholder="Selecciona un tamaño"
-        :disabled="seleccionado === null"
+        :disabled="selection === null"
         @click="showDecisionModal = true"
       />
     </div>
@@ -76,9 +77,15 @@ import OrderContactModal from './OrderContactModal.vue'
 
 const router = useRouter()
 
-const props = defineProps<{ item: Product }>()
+const props = defineProps<{ 
+  item: Product;
+  selection: number | null; // Viene del catálogo global
+}>()
 
-const seleccionado = ref<number | null>(null)
+const emit = defineEmits<{
+  (e: 'update:selection', value: number | null): void
+}>()
+
 const showDecisionModal = ref(false)
 const showContactModal = ref(false)
 
@@ -91,11 +98,11 @@ const openContactModal = () => {
 const handleDismiss = () => {
   showDecisionModal.value = false
   showContactModal.value = false
-  seleccionado.value = null
+  emit('update:selection', null)
 }
 
 const selectedOption = computed(() =>
-  seleccionado.value !== null ? priceOptions.value[seleccionado.value] : null
+  props.selection !== null ? priceOptions.value[props.selection] : null
 )
 
 // Opción 1: ir al flujo de reserva con el producto pre-cargado como nota
@@ -113,10 +120,10 @@ const handleReserve = () => {
   } })
 }
 
-// Opción 2: pago directo — recibe nombre y teléfono del modal de contacto
+// Opción 2: pago directo
 const handleDirectPay = () => {
   showContactModal.value = false
-  seleccionado.value = null
+  emit('update:selection', null)
 }
 
 const cleanDescription = (html: string) => {
