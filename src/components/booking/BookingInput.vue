@@ -6,10 +6,10 @@
     </label>
 
     <div class="relative">
-      <div v-if="type === 'tel'" 
+      <div v-if="type === 'tel'"
            class="flex w-full h-[44px] rounded-xl border-2 transition-all duration-300 relative"
            :class="statusColorClass">
-        
+
         <div class="relative shrink-0 w-[100px] border-r border-stone-200" v-click-outside="closeDropdown">
           <button 
             type="button"
@@ -73,6 +73,7 @@
           @input="handlePhoneInput"
           @focus="handleFocus" 
           @blur="handleBlur" 
+          @keydown="onlyNumbers"
           autocomplete="tel" 
           inputmode="tel" 
           v-bind="$attrs"
@@ -115,23 +116,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, type DirectiveBinding } from 'vue'
 import { Icon } from '@iconify/vue'
 import { parsePhoneNumberFromString, getCountries, getCountryCallingCode, AsYouType } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
 
 // --- DIRECTIVA CLICK OUTSIDE ---
 const vClickOutside = {
-  mounted(el: any, binding: any) {
+  mounted(el: HTMLElement & { clickOutsideEvent?: (event: Event) => void }, binding: DirectiveBinding) {
     el.clickOutsideEvent = (event: Event) => {
-      if (!(el === event.target || el.contains(event.target))) {
+      if (!(el === event.target || el.contains(event.target as Node))) {
         binding.value()
       }
     }
     document.addEventListener('click', el.clickOutsideEvent)
   },
-  unmounted(el: any) {
-    document.removeEventListener('click', el.clickOutsideEvent)
+  unmounted(el: HTMLElement & { clickOutsideEvent?: (event: Event) => void }) {
+    if (el.clickOutsideEvent) {
+      document.removeEventListener('click', el.clickOutsideEvent)
+    }
   }
 }
 
@@ -245,9 +248,9 @@ const statusColorClass = computed(() => {
 
 const labelColorClass = computed(() => props.error ? 'text-red-700' : isFocused.value ? 'text-primary' : 'text-stone-700')
 
-const handleInput = (e: any) => emit('update:modelValue', e.target.value)
-const handleFocus = (e: any) => { isFocused.value = true; emit('focus', e) }
-const handleBlur = (e: any) => { 
+const handleInput = (e: Event) => emit('update:modelValue', (e.target as HTMLInputElement).value)
+const handleFocus = (e: FocusEvent) => { isFocused.value = true; emit('focus', e) }
+const handleBlur = (e: FocusEvent) => { 
   isFocused.value = false
   emit('blur', e)
 }

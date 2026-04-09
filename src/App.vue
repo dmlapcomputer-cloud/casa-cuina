@@ -36,8 +36,8 @@
     </div>
   </div>
 
-  <template v-else :key="String(settings?.maintenance_mode)">
-    <RouterView></RouterView>
+  <template v-else>
+    <RouterView :key="String(settings?.maintenance_mode)"></RouterView>
     <ToastProvider
       position="top-center"
       richColors

@@ -114,7 +114,7 @@ const handleReserve = () => {
 }
 
 // Opción 2: pago directo — recibe nombre y teléfono del modal de contacto
-const handleDirectPay = (contact: { name: string; phone: string }) => {
+const handleDirectPay = () => {
   showContactModal.value = false
   seleccionado.value = null
 }

@@ -20,7 +20,7 @@
           leave-from="opacity-100 translate-y-0 sm:scale-100"
           leave-to="opacity-0 translate-y-4 sm:scale-95"
         >
-          <DialogPanel class="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-stone-100 my-auto max-h-[90vh] overflow-y-auto">
+          <DialogPanel class="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-stone-100 my-auto max-h-[90vh] overflow-y-auto">
 
             <!-- Header -->
             <div class="px-8 pt-5 pb-2 text-center space-y-1">
