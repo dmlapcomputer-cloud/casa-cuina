@@ -46,7 +46,7 @@
     :price="selectedOption?.price ?? ''"
     @reserve="handleReserve"
     @pay="openContactModal"
-    @dismiss="showDecisionModal = false"
+    @dismiss="handleDismiss"
   />
 
   <!-- Modal de contacto para pago directo -->
@@ -59,7 +59,7 @@
     :menu-type="item.category?.name ?? 'Tortas'"
     :anticipation-hours="item.min_prep_hours ?? 0"
     @confirm="handleDirectPay"
-    @dismiss="showContactModal = false"
+    @dismiss="handleDismiss"
   />
 </template>
 
@@ -85,6 +85,13 @@ const showContactModal = ref(false)
 const openContactModal = () => {
   showDecisionModal.value = false
   showContactModal.value = true
+}
+
+// Nueva función para resetear todo al cerrar modal
+const handleDismiss = () => {
+  showDecisionModal.value = false
+  showContactModal.value = false
+  seleccionado.value = null
 }
 
 const selectedOption = computed(() =>

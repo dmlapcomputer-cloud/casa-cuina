@@ -284,6 +284,8 @@ onMounted(async () => {
   const cakeFormMenu = history.state.cake
   if (cakeFormMenu) {
     cakeField.value = cakeFormMenu
+    // Limpiamos el estado para que no persista al refrescar la pantalla
+    history.replaceState({ ...history.state, cake: undefined }, '')
   }
 })
 
@@ -314,7 +316,8 @@ watch(cakeField, (val) => {
       items: [{
         product_id: val.product_id,
         quantity: 1,
-        price: Number(val.price.replace('Bs', '').trim()),
+        // Eliminamos el prefijo 'Bs.' específicamente para que el punto no afecte al número
+        price: Number(val.price.replace(/^Bs\.?\s*/i, "").replace(/[^0-9.]/g, "")),
         note: val.size
       }],
     })
