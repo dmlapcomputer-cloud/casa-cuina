@@ -460,21 +460,9 @@ const minGuest = computed(() => activeRule.value?.min_people || 50)
 // Obtenemos las horas de estadía desde el server, si no existe usamos 3 por defecto
 const stayDuration = computed(() => minBookingAdvance.value || 3);
 
-//logica de sugerencia de 3Horas sincronizacion de horas
-watch(() => form.value.start_time, (newStart) => {
-  if (newStart) {
-    const [hours = 0, minutes = 0] = newStart.split(':').map(Number);
-    let sugeredEnd = hours + stayDuration.value;
+// La lógica de sugerencia de hora final ahora se maneja internamente en TimeRangePicker
+// a través del prop durationHours, evitando duplicidad y conflictos de sincronización.
 
-    // No permitir que la sugerencia pase el límite de la regla
-    if (sugeredEnd > timeLimits.value.max) {
-      sugeredEnd = timeLimits.value.max;
-    }
-
-    // Asignamos al campo correcto que usa tu TimeRangePicker
-    form.value.end_time = `${String(sugeredEnd).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  }
-});
 // Total de módulos de pantalla para activar sonido automático
 /*const totalModulosPantallas = computed(() => {
   const screenSizes = [

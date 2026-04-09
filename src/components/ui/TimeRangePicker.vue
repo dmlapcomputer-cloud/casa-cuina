@@ -64,7 +64,8 @@ const masterTimeSchedule = computed(() => {
   for (let h = start; h <= end; h++) {
     for (const m of ['00', '30']) {
       const time = `${h.toString().padStart(2, '0')}:${m}`
-      if(h<23 || (h === 23 && m === '00')){
+      // Si llegamos a la hora final (end), solo incluimos el bloque :00
+      if(h < end || (h === end && m === '00')){
         timeBlocks.push(time)
       }
     }
@@ -192,7 +193,7 @@ watch(() => arrivalTimeOptions.value, (newOpts) => {
 :deep(.p-select-dropdown) {
   color: theme('colors.stone.400') !important;
 }
-:dee(.custom-booking-select.p-focus){
+:deep(.custom-booking-select.p-focus){
   border-color: theme('colors.primary.DEFAULT',#C27B2E) !important;
   box-shadow: 0 0 0 4px theme('colors.primary.DEFAULT / 20%', rgba(194, 123, 46, 0.2)) !important;
 
