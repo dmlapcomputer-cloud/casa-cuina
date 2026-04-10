@@ -12,6 +12,7 @@
 
         <div class="relative shrink-0 w-[100px] border-r border-stone-200" v-click-outside="closeDropdown">
           <button 
+            ref="countryBtnRef"
             type="button"
             @click="toggleDropdown"
             :disabled="disabled"
@@ -23,46 +24,50 @@
             <Icon icon="lucide:chevron-down" class="w-3 h-3 text-stone-400 transition-transform" :class="{'rotate-180': isDropdownOpen}" />
           </button>
 
-          <transition name="fade-pop">
-            <div v-if="isDropdownOpen" 
-                 class="absolute top-full left-0 mt-2 w-[250px] bg-white border border-stone-200 rounded-xl shadow-2xl z-[100] overflow-hidden">
-              
-              <div class="p-2 border-b border-stone-100 bg-stone-50">
-                <div class="relative">
-                  <Icon icon="lucide:search" class="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400" />
-                  <input 
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Buscar país..."
-                    class="w-full pl-7 pr-2 py-1.5 text-[11px] bg-white border border-stone-200 rounded-md outline-none focus:border-primary"
-                    @click.stop
-                  />
-                </div>
-              </div>
-
-              <div class="max-h-[220px] overflow-y-auto scrollbar-custom">
-                <div v-if="!searchQuery" @click="selectCountry('BO')" 
-                     class="p-2.5 hover:bg-primary/5 cursor-pointer border-b border-stone-50 flex items-center justify-between group/item">
-                  <span class="text-xs font-bold text-stone-700">🇧🇴 Bolivia</span>
-                  <span class="text-[10px] font-black text-primary">+591</span>
-                </div>
-
-                <div v-for="c in filteredCountries" :key="c.code" 
-                     @click="selectCountry(c.code)"
-                     class="p-2.5 hover:bg-stone-50 cursor-pointer flex items-center justify-between transition-colors border-b border-stone-50 last:border-0">
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm">{{ c.flag }}</span>
-                    <span class="text-xs text-stone-600">{{ c.name }}</span>
+          <Teleport to="body">
+            <transition name="fade-pop">
+              <div v-if="isDropdownOpen"
+                   class="fixed w-[250px] bg-white border border-stone-200 rounded-xl shadow-2xl overflow-hidden"
+                   :style="dropdownStyle"
+                   style="z-index: 99999;"
+              >
+                <div class="p-2 border-b border-stone-100 bg-stone-50">
+                  <div class="relative">
+                    <Icon icon="lucide:search" class="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400" />
+                    <input 
+                      v-model="searchQuery"
+                      type="text"
+                      placeholder="Buscar país..."
+                      class="w-full pl-7 pr-2 py-1.5 text-[11px] bg-white border border-stone-200 rounded-md outline-none focus:border-primary"
+                      @click.stop
+                    />
                   </div>
-                  <span class="text-[10px] text-stone-400 font-medium">+{{ c.dialCode }}</span>
                 </div>
 
-                <div v-if="filteredCountries.length === 0" class="p-4 text-center text-[10px] text-stone-400 uppercase italic">
-                  No se encontraron resultados
+                <div class="max-h-[220px] overflow-y-auto scrollbar-custom">
+                  <div v-if="!searchQuery" @click="selectCountry('BO')" 
+                       class="p-2.5 hover:bg-primary/5 cursor-pointer border-b border-stone-50 flex items-center justify-between group/item">
+                    <span class="text-xs font-bold text-stone-700">🇧🇴 Bolivia</span>
+                    <span class="text-[10px] font-black text-primary">+591</span>
+                  </div>
+
+                  <div v-for="c in filteredCountries" :key="c.code" 
+                       @click="selectCountry(c.code)"
+                       class="p-2.5 hover:bg-stone-50 cursor-pointer flex items-center justify-between transition-colors border-b border-stone-50 last:border-0">
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm">{{ c.flag }}</span>
+                      <span class="text-xs text-stone-600">{{ c.name }}</span>
+                    </div>
+                    <span class="text-[10px] text-stone-400 font-medium">+{{ c.dialCode }}</span>
+                  </div>
+
+                  <div v-if="filteredCountries.length === 0" class="p-4 text-center text-[10px] text-stone-400 uppercase italic">
+                    No se encontraron resultados
+                  </div>
                 </div>
               </div>
-            </div>
-          </transition>
+            </transition>
+          </Teleport>
         </div>
 
         <input 
@@ -116,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, type DirectiveBinding } from 'vue'
+import { ref, computed, watch, nextTick, type DirectiveBinding } from 'vue'
 import { Icon } from '@iconify/vue'
 import { parsePhoneNumberFromString, getCountries, getCountryCallingCode, AsYouType } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
@@ -166,6 +171,8 @@ const autoDetectedCountry = ref<string | null>(null)
 const selectedCountryCode = ref<CountryCode>(props.defaultCountry as CountryCode)
 const nationalNumber = ref('')
 const inputId = `field-${Math.random().toString(36).slice(2, 7)}`
+const countryBtnRef = ref<HTMLElement | null>(null)
+const dropdownStyle = ref<Record<string, string>>({})
 
 // --- LÓGICA DE PAÍSES ---
 const allCountriesList = computed(() => {
@@ -189,7 +196,18 @@ const selectedCountry = computed(() => allCountriesList.value.find(c => c.code =
 // --- MÉTODOS ---
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
-  if (isDropdownOpen.value) searchQuery.value = ''
+  if (isDropdownOpen.value) {
+    searchQuery.value = ''
+    nextTick(() => {
+      if (countryBtnRef.value) {
+        const rect = countryBtnRef.value.getBoundingClientRect()
+        dropdownStyle.value = {
+          top: `${rect.bottom + 8}px`,
+          left: `${rect.left}px`,
+        }
+      }
+    })
+  }
 }
 
 const closeDropdown = () => isDropdownOpen.value = false
